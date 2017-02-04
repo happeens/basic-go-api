@@ -6,11 +6,26 @@ import (
 	"log"
 	"os"
 
-	"api/config"
+	"github.com/happeens/basic-go-api/config"
 )
 
 func main() {
+    args := os.Args
+    if(len(args) > 1) {
+        switch(args[1]) {
+        case "migrate":
+            migrate()
+            return
+        default:
+            fmt.Printf("unknown option: %v", args[1])
+        }
+    }
+
 	router := config.InitRoutes()
+
+    for _, arg := range args {
+        fmt.Printf("arg: %v\n", arg)
+    }
 
 	err := godotenv.Load()
 	if err != nil {
@@ -21,3 +36,4 @@ func main() {
 
 	router.Run(port)
 }
+

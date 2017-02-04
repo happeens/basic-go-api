@@ -10,8 +10,13 @@ var db *gorm.DB
 
 func init() {
 	var err error
-	db, err = gorm.Open("mysql", "gouser:w00f1fad@/todos?charset=utf8&loc=Local&parseTime=True")
+	db, err = gorm.Open("mysql", "root:123@/goapi?charset=utf8&loc=Local&parseTime=True")
 	if err != nil {
 		fmt.Printf("Error opening DB connection: %v", err)
 	}
 }
+
+func Migrate(model interface{}) {
+    db.AutoMigrate(model)
+}
+

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"api/models"
+	"github.com/happeens/basic-go-api/models"
 )
 
 var todoModel models.TodoModel

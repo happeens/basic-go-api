@@ -1,22 +1,15 @@
 package main
 
 import (
-	"fmt"
+    "fmt"
 
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
-
-	"api/models"
+	"github.com/happeens/basic-go-api/models"
 )
 
-func main() {
-	db, err := gorm.Open("mysql", "gouser:w00f1fad@/todos")
-	if err != nil {
-		fmt.Printf("Error opening DB connection: %v", err)
-	}
+func migrate() {
+    fmt.Printf("migrating...\n");
 
-	defer db.Close()
-
-	db.AutoMigrate(&models.Todo{})
-	db.AutoMigrate(&models.User{})
+    var todoModel = models.Todo{}
+    models.Migrate(&todoModel)
 }
+

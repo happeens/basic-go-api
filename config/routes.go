@@ -3,7 +3,7 @@ package config
 import (
 	"gopkg.in/gin-gonic/gin.v1"
 
-	"api/controllers"
+	"github.com/happeens/basic-go-api/controllers"
 )
 
 func InitRoutes() *gin.Engine {
