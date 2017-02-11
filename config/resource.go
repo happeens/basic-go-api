@@ -1,25 +1,34 @@
 package config
 
 import (
-	"bytes"
-	"gopkg.in/gin-gonic/gin.v1"
+	"fmt"
 
 	. "github.com/happeens/basic-go-api/controllers"
 )
 
-func resource(name string, ctrl Controller, router *gin.Engine) {
-	var buffer bytes.Buffer
-	buffer.WriteString("/")
-	buffer.WriteString(name)
-	buffer.WriteString("s")
-	basePath := buffer.String()
+func resource(name string, ctrl Controller, methods ...string) {
+	if len(methods) <= 0 {
+		methods = append(methods, []string{"index", "show", "create", "update", "destroy"}...)
+	}
 
-	buffer.WriteString("/:id")
-	idPath := buffer.String()
+	groupName := "/" + name + "s"
+	g := Router.Group(groupName)
+	g.Use(authMW.MiddlewareFunc())
 
-	router.GET(basePath, ctrl.Index)
-	router.GET(idPath, ctrl.Show)
-	router.POST(basePath, ctrl.Create)
-	router.PUT(idPath, ctrl.Update)
-	router.DELETE(idPath, ctrl.Destroy)
+	for _, method := range methods {
+		switch method {
+		case "index":
+			g.GET("", ctrl.Index)
+		case "show":
+			g.GET("/:id", ctrl.Show)
+		case "create":
+			g.POST("", ctrl.Create)
+		case "update":
+			g.PUT("/:id", ctrl.Update)
+		case "destroy":
+			g.DELETE("/:id", ctrl.Destroy)
+		default:
+			fmt.Printf("Unrecognized resource method: %v", method)
+		}
+	}
 }
