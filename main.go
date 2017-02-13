@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"github.com/fvbock/endless"
+	"github.com/joho/godotenv"
+	"os"
 
-	"github.com/happeens/basic-go-api/config"
+	"github.com/happeens/basic-go-api/app"
 )
 
 func main() {
@@ -11,14 +14,15 @@ func main() {
 	if len(args) > 1 {
 		switch args[1] {
 		case "migrate":
-			migrate()
+			// migrate()
+			fmt.Printf("migrating")
 			return
 		default:
 			fmt.Printf("unknown option: %v", args[1])
 		}
 	}
 
-	router := config.InitRoutes()
+	router := app.InitRoutes()
 
 	for _, arg := range args {
 		fmt.Printf("arg: %v\n", arg)
@@ -26,10 +30,10 @@ func main() {
 
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		fmt.Printf("Error loading .env file")
 	}
 
 	port := fmt.Sprintf(":%v", os.Getenv("PORT"))
 
-	endless.ListenAndServe(config.Port, config.Router)
+	endless.ListenAndServe(port, router)
 }
