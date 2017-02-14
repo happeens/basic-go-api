@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/happeens/basic-go-api/app"
 	_ "github.com/jinzhu/gorm"
 	"time"
 )
@@ -18,17 +19,17 @@ type TodoModel struct{}
 
 func (TodoModel) All() []Todo {
 	t := []Todo{}
-	db.Find(&t)
+	app.Db.Find(&t)
 
 	return t
 }
 
 func (TodoModel) Find(id uint) (Todo, error) {
 	t := Todo{}
-	db.First(&t, id)
+	app.Db.First(&t, id)
 
-	if db.Error != nil {
-		return t, db.Error
+	if app.Db.Error != nil {
+		return t, app.Db.Error
 	}
 
 	return t, nil
@@ -36,7 +37,7 @@ func (TodoModel) Find(id uint) (Todo, error) {
 
 func (TodoModel) New(description string, done bool) (uint, error) {
 	t := Todo{Description: description, Done: done}
-	result := db.Create(&t)
+	result := app.Db.Create(&t)
 
 	if result.Error != nil {
 		return 0, result.Error
@@ -47,7 +48,7 @@ func (TodoModel) New(description string, done bool) (uint, error) {
 
 func (TodoModel) Update(id uint, description string, done bool) (int64, error) {
 	t := Todo{}
-	result := db.First(&t, id)
+	result := app.Db.First(&t, id)
 
 	if result.Error != nil {
 		return 0, result.Error
@@ -55,7 +56,7 @@ func (TodoModel) Update(id uint, description string, done bool) (int64, error) {
 
 	t.Description = description
 	t.Done = done
-	result = db.Save(&t)
+	result = app.Db.Save(&t)
 
 	if result.Error != nil {
 		return result.RowsAffected, result.Error
@@ -66,7 +67,7 @@ func (TodoModel) Update(id uint, description string, done bool) (int64, error) {
 
 func (TodoModel) Destroy(id uint) int64 {
 	t := Todo{ID: id}
-	result := db.Delete(&t)
+	result := app.Db.Delete(&t)
 
 	return result.RowsAffected
 }

@@ -1,4 +1,4 @@
-package controllers
+package todoBundle
 
 import (
 	"gopkg.in/gin-gonic/gin.v1"
@@ -10,15 +10,14 @@ import (
 
 var todoModel models.TodoModel
 
-type TodoController struct{}
+type todoController struct{}
 
-func (TodoController) Index(c *gin.Context) {
-	var Todos = models.TodoModel{}
-	todos := Todos.All()
+func (todoController) Index(c *gin.Context) {
+	todos := todoModel.All()
 	c.JSON(http.StatusOK, todos)
 }
 
-func (TodoController) Show(c *gin.Context) {
+func (todoController) Show(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid id"})
@@ -38,7 +37,7 @@ type createRequest struct {
 	Done        string `json:"done"`
 }
 
-func (TodoController) Create(c *gin.Context) {
+func (todoController) Create(c *gin.Context) {
 	var json createRequest
 	err := c.BindJSON(&json)
 	if err != nil {
@@ -65,7 +64,7 @@ type updateRequest struct {
 	Done        string `json:"done"`
 }
 
-func (TodoController) Update(c *gin.Context) {
+func (todoController) Update(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid id"})
@@ -94,7 +93,7 @@ func (TodoController) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"updated": result})
 }
 
-func (TodoController) Destroy(c *gin.Context) {
+func (todoController) Destroy(c *gin.Context) {
 	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid id"})
