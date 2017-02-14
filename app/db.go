@@ -5,14 +5,28 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-var Db *gorm.DB
+var db *gorm.DB
 
 func initDb() error {
 	var err error
-	Db, err = gorm.Open("mysql", "root:123@/goapi?charset=utf8&loc=Local&parseTime=True")
+	db, err = gorm.Open("mysql", "root:123@/goapi?charset=utf8&loc=Local&parseTime=True")
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func DB() *gorm.DB {
+	if db != nil {
+		return db
+	}
+
+	var err error
+	db, err = gorm.Open("mysql", "root:123@/goapi?charset=utf8&loc=Local&parseTime=True")
+	if err != nil {
+		panic(err)
+	}
+
+	return db
 }

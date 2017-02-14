@@ -19,17 +19,17 @@ type TodoModel struct{}
 
 func (TodoModel) All() []Todo {
 	t := []Todo{}
-	app.Db.Find(&t)
+	app.DB().Find(&t)
 
 	return t
 }
 
 func (TodoModel) Find(id uint) (Todo, error) {
 	t := Todo{}
-	app.Db.First(&t, id)
+	app.DB().First(&t, id)
 
-	if app.Db.Error != nil {
-		return t, app.Db.Error
+	if app.DB().Error != nil {
+		return t, app.DB().Error
 	}
 
 	return t, nil
@@ -37,7 +37,7 @@ func (TodoModel) Find(id uint) (Todo, error) {
 
 func (TodoModel) New(description string, done bool) (uint, error) {
 	t := Todo{Description: description, Done: done}
-	result := app.Db.Create(&t)
+	result := app.DB().Create(&t)
 
 	if result.Error != nil {
 		return 0, result.Error
@@ -48,7 +48,7 @@ func (TodoModel) New(description string, done bool) (uint, error) {
 
 func (TodoModel) Update(id uint, description string, done bool) (int64, error) {
 	t := Todo{}
-	result := app.Db.First(&t, id)
+	result := app.DB().First(&t, id)
 
 	if result.Error != nil {
 		return 0, result.Error
@@ -56,7 +56,7 @@ func (TodoModel) Update(id uint, description string, done bool) (int64, error) {
 
 	t.Description = description
 	t.Done = done
-	result = app.Db.Save(&t)
+	result = app.DB().Save(&t)
 
 	if result.Error != nil {
 		return result.RowsAffected, result.Error
@@ -67,7 +67,7 @@ func (TodoModel) Update(id uint, description string, done bool) (int64, error) {
 
 func (TodoModel) Destroy(id uint) int64 {
 	t := Todo{ID: id}
-	result := app.Db.Delete(&t)
+	result := app.DB().Delete(&t)
 
 	return result.RowsAffected
 }
