@@ -1,8 +1,6 @@
 package todoBundle
 
 import (
-	"gopkg.in/gin-gonic/gin.v1"
-
 	"github.com/happeens/basic-go-api/app"
 )
 
@@ -16,7 +14,4 @@ func init() {
 		todos.PUT("/:id", todoCtrl.Update)
 		todos.DELETE("/:id", todoCtrl.Destroy)
 	}
-}
-
-func initRoutes(r *gin.Engine) {
 }

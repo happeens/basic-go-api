@@ -3,33 +3,38 @@ package todoBundle
 import (
 	"gopkg.in/gin-gonic/gin.v1"
 	"net/http"
-	"strconv"
 
-	"github.com/happeens/basic-go-api/models"
+	"github.com/happeens/basic-go-api/app"
+	"gopkg.in/mgo.v2/bson"
 )
-
-var todoModel models.TodoModel
 
 type todoController struct{}
 
 func (todoController) Index(c *gin.Context) {
-	todos := todoModel.All()
-	c.JSON(http.StatusOK, todos)
+	var result []todo
+	err := app.DB().C("todos").Find(nil).All(&result)
+	if err != nil {
+		app.Log.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
 }
 
 func (todoController) Show(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	result := todo{}
+	id := bson.ObjectIdHex(c.Param("id"))
+	app.Log.Debugf("looking for id %v", id)
+
+	err := app.DB().C("todos").FindId(id).One(&result)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid id"})
+		app.Log.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	todo, err := todoModel.Find(uint(id))
-	if err != nil {
-		c.JSON(http.StatusNotFound, err)
-		return
-	}
-	c.JSON(http.StatusOK, todo)
+	c.JSON(http.StatusOK, result)
 }
 
 type createRequest struct {
@@ -41,7 +46,8 @@ func (todoController) Create(c *gin.Context) {
 	var json createRequest
 	err := c.BindJSON(&json)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		app.Log.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -50,13 +56,20 @@ func (todoController) Create(c *gin.Context) {
 		doneBool = true
 	}
 
-	id, err := todoModel.New(json.Description, doneBool)
+	insert := todo{
+		ID:          bson.NewObjectId(),
+		Description: json.Description,
+		Done:        doneBool,
+	}
+
+	err = app.DB().C("todos").Insert(&insert)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
+		app.Log.Error(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"id": id})
+	c.JSON(http.StatusOK, gin.H{"id": insert.ID})
 }
 
 type updateRequest struct {
@@ -65,16 +78,10 @@ type updateRequest struct {
 }
 
 func (todoController) Update(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid id"})
-		return
-	}
-
 	var json updateRequest
-	err = c.BindJSON(&json)
+	err := c.BindJSON(&json)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -83,24 +90,29 @@ func (todoController) Update(c *gin.Context) {
 		doneBool = true
 	}
 
-	var result int64
-	result, err = todoModel.Update(uint(id), json.Description, doneBool)
+	id := bson.ObjectIdHex(c.Param("id"))
+	update := todo{
+		Description: json.Description,
+		Done:        doneBool,
+	}
+
+	err = app.DB().C("todos").UpdateId(id, update)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		app.Log.Errorf("error updating: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"updated": result})
+	c.JSON(http.StatusOK, gin.H{"updated": 1})
 }
 
 func (todoController) Destroy(c *gin.Context) {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 32)
+	id := c.Param("id")
+	err := app.DB().C("todos").RemoveId(id)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "Invalid id"})
-		return
+		app.Log.Errorf("error deleting: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	result := todoModel.Destroy(uint(id))
-
-	c.JSON(http.StatusOK, gin.H{"deleted": result})
+	c.JSON(http.StatusOK, gin.H{"deleted": 1})
 }
