@@ -5,13 +5,14 @@ import (
 	"net/http"
 
 	"github.com/happeens/basic-go-api/app"
+	"github.com/happeens/basic-go-api/model"
 	"gopkg.in/mgo.v2/bson"
 )
 
 type todoController struct{}
 
 func (todoController) Index(c *gin.Context) {
-	var result []todo
+	var result []model.Todo
 	err := app.DB().C("todos").Find(nil).All(&result)
 	if err != nil {
 		app.Log.Error(err)
@@ -23,7 +24,7 @@ func (todoController) Index(c *gin.Context) {
 }
 
 func (todoController) Show(c *gin.Context) {
-	result := todo{}
+	result := model.Todo{}
 	id := bson.ObjectIdHex(c.Param("id"))
 	app.Log.Debugf("looking for id %v", id)
 
@@ -56,7 +57,7 @@ func (todoController) Create(c *gin.Context) {
 		doneBool = true
 	}
 
-	insert := todo{
+	insert := model.Todo{
 		ID:          bson.NewObjectId(),
 		Description: json.Description,
 		Done:        doneBool,
@@ -91,7 +92,7 @@ func (todoController) Update(c *gin.Context) {
 	}
 
 	id := bson.ObjectIdHex(c.Param("id"))
-	update := todo{
+	update := model.Todo{
 		Description: json.Description,
 		Done:        doneBool,
 	}
@@ -107,7 +108,7 @@ func (todoController) Update(c *gin.Context) {
 }
 
 func (todoController) Destroy(c *gin.Context) {
-	id := c.Param("id")
+	id := bson.ObjectIdHex(c.Param("id"))
 	err := app.DB().C("todos").RemoveId(id)
 	if err != nil {
 		app.Log.Errorf("error deleting: %v", err)

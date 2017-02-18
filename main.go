@@ -5,6 +5,7 @@ import (
 
 	"github.com/happeens/basic-go-api/app"
 	_ "github.com/happeens/basic-go-api/bundle/todoBundle"
+	_ "github.com/happeens/basic-go-api/bundle/userBundle"
 )
 
 func main() {
