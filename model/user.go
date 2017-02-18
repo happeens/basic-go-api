@@ -7,5 +7,5 @@ import (
 type User struct {
 	ID       bson.ObjectId `bson:"_id,omitempty"`
 	Name     string
-	Password string
+	Password string `json:"-"`
 }
