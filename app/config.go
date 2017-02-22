@@ -14,6 +14,11 @@ func initConf() {
 	}
 }
 
-func Env(key string) string {
-	return env[key]
+func Env(key string, def string) string {
+	val := env[key]
+	if val == "" {
+		return def
+	}
+
+	return val
 }

@@ -43,7 +43,9 @@ func (userController) Authenticate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "success!"})
+	token := app.CreateToken(user.Name)
+
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
 func (userController) Index(c *gin.Context) {

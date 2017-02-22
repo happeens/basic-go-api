@@ -15,7 +15,10 @@ func init() {
 	Log.Debug("Connecting to database...")
 	initDb()
 
-	if Env("ENV") == "prod" {
+	Log.Debug("Setting up auth...")
+	initAuth()
+
+	if Env("ENV", "dev") == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	Router = gin.Default()

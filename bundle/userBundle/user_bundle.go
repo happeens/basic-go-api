@@ -14,5 +14,6 @@ func init() {
 		users.GET("", userCtrl.Index)
 		users.GET("/:id", userCtrl.Show)
 		users.POST("", userCtrl.Create)
+		users.DELETE("/:id", userCtrl.Destroy)
 	}
 }

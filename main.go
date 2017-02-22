@@ -9,5 +9,6 @@ import (
 )
 
 func main() {
-	endless.ListenAndServe(":"+app.Env("PORT"), app.Router)
+	port := ":" + app.Env("PORT", "8000")
+	endless.ListenAndServe(port, app.Router)
 }
