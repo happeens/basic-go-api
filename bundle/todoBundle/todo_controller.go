@@ -20,7 +20,9 @@ func (todoController) Index(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	user, _ := c.Get("user")
+
+	c.JSON(http.StatusOK, gin.H{"result": result, "user": user})
 }
 
 func (todoController) Show(c *gin.Context) {

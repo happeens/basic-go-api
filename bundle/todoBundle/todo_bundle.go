@@ -7,6 +7,7 @@ import (
 func init() {
 	var todoCtrl = todoController{}
 	todos := app.Router.Group("/todos")
+	todos.Use(app.RequireAuth())
 	{
 		todos.GET("", todoCtrl.Index)
 		todos.GET("/:id", todoCtrl.Show)
