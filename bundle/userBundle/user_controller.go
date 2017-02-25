@@ -43,7 +43,7 @@ func (userController) Authenticate(c *gin.Context) {
 		return
 	}
 
-	token := app.CreateToken(user.Name)
+	token := app.CreateToken(user)
 
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }

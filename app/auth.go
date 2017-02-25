@@ -3,6 +3,8 @@ package app
 import (
 	"github.com/dgrijalva/jwt-go"
 	"time"
+
+	"github.com/happeens/basic-go-api/model"
 )
 
 type authSettings struct {
@@ -17,7 +19,6 @@ var auth authSettings
 
 func initAuth() {
 	key := Env("SECRET", "")
-	Log.Debugf("secret found: %v", key)
 	if key == "" {
 		Log.Fatal("secret missing from env")
 		return
@@ -31,9 +32,9 @@ func initAuth() {
 	}
 }
 
-func CreateToken(user string) string {
+func CreateToken(user model.User) string {
 	claims := jwt.MapClaims{
-		"user": user,
+		"user": user.Name,
 		"exp":  time.Now().Add(auth.Timeout).Unix(),
 		"iat":  time.Now().Unix(),
 	}
