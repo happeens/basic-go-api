@@ -87,8 +87,6 @@ func parseHeader(header string) (*jwt.Token, error) {
 		return nil, errors.New("invalid authorization header")
 	}
 
-	Log.Debugf("Found token: %v", parts[1])
-
 	return jwt.Parse(parts[1], func(token *jwt.Token) (interface{}, error) {
 		if token.Method != jwt.SigningMethodHS256 {
 			return nil, errors.New("invalid singing algorithm")
